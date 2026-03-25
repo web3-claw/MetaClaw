@@ -126,6 +126,13 @@ pip install -e ".[evolve]"              # + skill evolution via OpenAI-compatibl
 pip install -e ".[scheduler]"           # + Google Calendar integration for scheduler
 pip install -e ".[rl,evolve,scheduler]" # recommended for full RL + scheduler setup
 ```
+(Optional) WeChat personal account bridge (requires [Node.js](https://nodejs.org/) on your PATH, ≥ 22 recommended by the SDK). After `pip install`, install the Node dependency once:
+
+```bash
+(cd metaclaw/wechat_node && npm install)
+```
+
+If you set `wechat.bridge_dir` in config, run `npm install` in that directory instead. Full setup (QR login, relogin, troubleshooting): [metaclaw/wechat_node/README.md](metaclaw/wechat_node/README.md).
 
 If you want to run `rl.backend=mint`, install the MinT compatibility package separately in the same environment, for example [`mindlab-toolkit`](https://github.com/MindLab-Research/mindlab-toolkit). Similarly, for `rl.backend=weaver`, install [`nex-weaver`](https://github.com/nex-agi/weaver) separately. MetaClaw keeps these dependencies out of the default package so RL users can choose Tinker, MinT, or Weaver explicitly.
 
