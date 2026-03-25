@@ -53,6 +53,7 @@ metaclaw start --mode skills_only  # solo Skill, nessun RL (Tinker non necessari
 
 ## 🔥 Novita
 
+- **[25/03/2026]** **v0.4.0** — Contexture layer: MetaClaw ora persiste la memoria tra le sessioni per utenti e progetti. Fatti rilevanti, preferenze e cronologia del progetto vengono recuperati automaticamente e iniettati nei prompt. Include una politica di memoria adattiva, consolidamento in background e un servizio sidecar per la memoria opzionale.
 - **[16/03/2026]** **v0.3.2** Supporto multi-Claw: IronClaw, PicoClaw, ZeroClaw, CoPaw, NanoClaw e NemoClaw ora supportati insieme a OpenClaw. NanoClaw tramite il nuovo endpoint compatibile Anthropic `/v1/messages`; NemoClaw tramite routing di inferenza OpenShell. OpenRouter aggiunto come piattaforma LLM.
 - **[13/03/2026]** **v0.3.1** Supporto backend MinT: l'addestramento RL ora funziona sia con Tinker che con MinT. Configurabile tramite `rl.backend` (auto/tinker/mint).
 - **[13/03/2026]** **v0.3** Supporto al meta-apprendimento continuo: gli aggiornamenti RL lenti vengono eseguiti solo durante le ore di sonno, i periodi di inattivita o le riunioni di Google Calendar. Aggiunta la separazione tra set support/query per evitare che segnali di ricompensa obsoleti inquinino gli aggiornamenti del modello.

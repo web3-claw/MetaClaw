@@ -53,6 +53,7 @@ metaclaw start --mode skills_only  # スキルのみ、RL なし（Tinker 不要
 
 ## 🔥 ニュース
 
+- **[2026/03/25]** **v0.4.0** — Contexture layer（コンテキスチュア レイヤー）：MetaClaw がユーザーとプロジェクトのメモリをセッションをまたいで永続化。関連する事実・好み・プロジェクト履歴を自動取得してプロンプトに注入。適応型メモリポリシー、バックグラウンド統合、オプションのメモリサイドカーサービスを含む。
 - **[2026/03/16]** **v0.3.2** マルチ Claw サポート：IronClaw・PicoClaw・ZeroClaw・CoPaw・NanoClaw・NemoClaw が OpenClaw に加えて利用可能に。NanoClaw は新規 `/v1/messages` Anthropic 互換エンドポイント経由で、NemoClaw は OpenShell 推論ルーティング経由で接続。OpenRouter を LLM プラットフォームとして追加。
 - **[2026/03/13]** **v0.3.1** MinT バックエンドサポート：RL トレーニングが Tinker と MinT の両方で動作。`rl.backend`（auto/tinker/mint）で設定可能。
 - **[2026/03/13]** **v0.3** 継続的メタ学習サポート：RL 重み更新を睡眠時間・アイドル時間・Google Calendar 会議中にのみ実行。サポート/クエリセット分離を追加し、古い報酬信号によるモデル更新の汚染を防止。

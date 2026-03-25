@@ -53,6 +53,7 @@ metaclaw start --mode skills_only  # chi Skills, khong RL (khong can Tinker)
 
 ## 🔥 Tin moi
 
+- **[25/03/2026]** **v0.4.0** — Contexture layer: MetaClaw gio day luu tru bo nho xuyen phien lam viec cho nguoi dung va du an. Cac su kien, so thich va lich su du an lien quan duoc tu dong truy xuat va them vao prompt. Bao gom chinh sach bo nho thich ung, hop nhat nen va dich vu sidecar bo nho tuy chon.
 - **[16/03/2026]** **v0.3.2** Ho tro da Claw: IronClaw, PicoClaw, ZeroClaw, CoPaw, NanoClaw va NemoClaw nay duoc ho tro cung voi OpenClaw. NanoClaw qua endpoint tuong thich Anthropic `/v1/messages` moi; NemoClaw qua dinh tuyen suy luan OpenShell. Them OpenRouter lam nen tang LLM.
 - **[13/03/2026]** **v0.3.1** MinT backend duoc ho tro: huan luyen RL hien ho tro ca Tinker va MinT. Cau hinh qua `rl.backend` (auto/tinker/mint).
 - **[13/03/2026]** **v0.3** Ho tro meta-learning lien tuc: cap nhat RL cham chi chay trong gio ngu, thoi gian ranh hoac cuoc hop Google Calendar. Them phan tach tap support/query de ngan tin hieu thuong qua thoi lam nhiem mo hinh.

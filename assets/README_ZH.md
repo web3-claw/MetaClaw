@@ -53,6 +53,7 @@ metaclaw start --mode skills_only  # 仅 Skills，无 RL（无需 Tinker）
 
 ## 🔥 最新动态
 
+- **[2026/03/25]** **v0.4.0** — Contexture layer（上下文层）：MetaClaw 现可跨会话持久化用户和项目记忆。相关事实、偏好和项目历史自动检索并注入提示中。包含自适应记忆策略、后台整合及可选的记忆边车服务。
 - **[2026/03/16]** **v0.3.2** 多 Claw 支持：现已支持 IronClaw、PicoClaw、ZeroClaw、CoPaw、NanoClaw 和 NemoClaw，与 OpenClaw 并列。NanoClaw 通过新增的 `/v1/messages` Anthropic 兼容端点接入；NemoClaw 通过 OpenShell 推理路由接入。新增 OpenRouter 作为受支持的 LLM 平台。
 - **[2026/03/13]** **v0.3.1** MinT 后端支持：RL 训练现同时支持 Tinker 和 MinT。通过 `rl.backend`（auto/tinker/mint）配置。
 - **[2026/03/13]** **v0.3** 持续元学习支持：慢速 RL 更新仅在睡眠时间、空闲期间或 Google Calendar 会议期间运行。新增 support/query 集分离,防止过时的奖励信号污染模型更新。
