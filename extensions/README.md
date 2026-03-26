@@ -1,4 +1,4 @@
-## MetaClaw Plugin for OpenClaw v0.3.3
+## MetaClaw Plugin for OpenClaw v0.4.0
 
 One-click installer for [MetaClaw](https://github.com/aiming-lab/MetaClaw) as an OpenClaw extension. No `git clone` required — download the zip, enable, and go.
 
@@ -7,7 +7,7 @@ One-click installer for [MetaClaw](https://github.com/aiming-lab/MetaClaw) as an
 #### macOS / Linux
 
 ```bash
-curl -LO https://github.com/aiming-lab/MetaClaw/releases/download/v0.3.3/metaclaw-plugin.zip
+curl -LO https://github.com/aiming-lab/MetaClaw/releases/download/v0.4.0/metaclaw-plugin.zip
 unzip metaclaw-plugin.zip -d ~/.openclaw/extensions/metaclaw-openclaw
 openclaw plugins enable metaclaw-openclaw
 openclaw gateway restart
@@ -15,13 +15,13 @@ openclaw gateway restart
 
 > **China users**: If GitHub downloads are slow or timeout, use a mirror:
 > ```bash
-> curl -LO https://ghfast.top/https://github.com/aiming-lab/MetaClaw/releases/download/v0.3.3/metaclaw-plugin.zip
+> curl -LO https://ghfast.top/https://github.com/aiming-lab/MetaClaw/releases/download/v0.4.0/metaclaw-plugin.zip
 > ```
 
 #### Windows (PowerShell)
 
 ```powershell
-Invoke-WebRequest -Uri https://github.com/aiming-lab/MetaClaw/releases/download/v0.3.3/metaclaw-plugin.zip -OutFile metaclaw-plugin.zip
+Invoke-WebRequest -Uri https://github.com/aiming-lab/MetaClaw/releases/download/v0.4.0/metaclaw-plugin.zip -OutFile metaclaw-plugin.zip
 Expand-Archive metaclaw-plugin.zip -DestinationPath $env:USERPROFILE\.openclaw\extensions\metaclaw-openclaw
 openclaw plugins enable metaclaw-openclaw
 openclaw gateway restart
@@ -29,7 +29,7 @@ openclaw gateway restart
 
 > **China users**: If GitHub downloads are slow or timeout, replace the download URL with:
 > ```
-> https://ghfast.top/https://github.com/aiming-lab/MetaClaw/releases/download/v0.3.3/metaclaw-plugin.zip
+> https://ghfast.top/https://github.com/aiming-lab/MetaClaw/releases/download/v0.4.0/metaclaw-plugin.zip
 > ```
 
 ### Then run
@@ -43,6 +43,7 @@ metaclaw start
 
 - Creates an isolated Python virtual environment (`.venv`)
 - Installs MetaClaw (`[rl,evolve,scheduler]`) via pip
+- Installs WeChat bridge dependencies (`npm install` in `wechat_node`)
 - Installs `metaclaw` CLI wrapper and configures PATH (macOS / Linux / Windows)
 - Patches outbound LLM `fetch` to inject `X-Session-Id` / `X-Turn-Type` headers
 
@@ -56,7 +57,7 @@ metaclaw start
   sudo fallocate -l 4G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile
   ```
 
-### What's new in v0.3.3
+### What's new in v0.4.0
 
 - **Native OpenClaw extension** — MetaClaw plugs into OpenClaw’s plugin model instead of sitting beside it as a second, hand-wired stack.
 - **Two-step install** — drop the folder into OpenClaw’s extensions tree, then one command to enable and restart the gateway.

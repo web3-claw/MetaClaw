@@ -7,7 +7,7 @@ Download the zip, extract, enable — MetaClaw environment is set up automatical
 ### macOS / Linux
 
 ```bash
-curl -LO https://github.com/aiming-lab/MetaClaw/releases/download/v0.3.3/metaclaw-plugin.zip
+curl -LO https://github.com/aiming-lab/MetaClaw/releases/download/v0.4.0/metaclaw-plugin.zip
 unzip metaclaw-plugin.zip -d ~/.openclaw/extensions/metaclaw-openclaw
 openclaw plugins enable metaclaw-openclaw
 openclaw gateway restart
@@ -15,13 +15,13 @@ openclaw gateway restart
 
 > **China users**: If GitHub downloads are slow or timeout, use a mirror:
 > ```bash
-> curl -LO https://ghfast.top/https://github.com/aiming-lab/MetaClaw/releases/download/v0.3.3/metaclaw-plugin.zip
+> curl -LO https://ghfast.top/https://github.com/aiming-lab/MetaClaw/releases/download/v0.4.0/metaclaw-plugin.zip
 > ```
 
 ### Windows (PowerShell)
 
 ```powershell
-Invoke-WebRequest -Uri https://github.com/aiming-lab/MetaClaw/releases/download/v0.3.3/metaclaw-plugin.zip -OutFile metaclaw-plugin.zip
+Invoke-WebRequest -Uri https://github.com/aiming-lab/MetaClaw/releases/download/v0.4.0/metaclaw-plugin.zip -OutFile metaclaw-plugin.zip
 Expand-Archive metaclaw-plugin.zip -DestinationPath $env:USERPROFILE\.openclaw\extensions\metaclaw-openclaw
 openclaw plugins enable metaclaw-openclaw
 openclaw gateway restart
@@ -29,7 +29,7 @@ openclaw gateway restart
 
 > **China users**: If GitHub downloads are slow or timeout, replace the download URL with:
 > ```
-> https://ghfast.top/https://github.com/aiming-lab/MetaClaw/releases/download/v0.3.3/metaclaw-plugin.zip
+> https://ghfast.top/https://github.com/aiming-lab/MetaClaw/releases/download/v0.4.0/metaclaw-plugin.zip
 > ```
 
 ### Then run
@@ -43,6 +43,7 @@ metaclaw start
 
 - Creates an isolated Python virtual environment (`.venv`)
 - Installs MetaClaw (`[rl,evolve,scheduler]`) via pip
+- Installs WeChat bridge dependencies (`npm install` in `wechat_node`)
 - Installs `metaclaw` CLI wrapper and configures PATH (macOS / Linux / Windows)
 - Patches outbound LLM `fetch` to inject `X-Session-Id` / `X-Turn-Type` headers
 
@@ -112,6 +113,7 @@ Full auto (`oneClickMetaclaw`):
 | `pipPython` | Default `python3`. Used to create the venv. Use a **`python3.12`**-style command or an absolute interpreter path if **`python3`** is too old. |
 | `pipInstallSpec` | Default `aiming-metaclaw[rl,evolve,scheduler]` from PyPI. |
 | `pipExtraArgs` | Extra pip flags. |
+| `wechatNodeDir` | Override path to wechat\_node. Default: auto-detected from venv's installed metaclaw package. |
 
 ---
 
@@ -121,16 +123,10 @@ On gateway load, the plugin:
 
 - **Creates a Python virtual environment** (`.venv`) inside the plugin directory if one does not already exist.
 - Installs MetaClaw into the venv via **`pip install`** (from PyPI, works with Chinese mirrors).
+- Installs WeChat bridge dependencies (**`npm install`** in `wechat_node`) automatically after pip.
 - Creates a `metaclaw` wrapper script and auto-configures `PATH` (macOS / Linux / Windows) so you can run `metaclaw` directly.
 - Patches `fetch` to inject `X-Session-Id` / `X-Turn-Type` on outbound LLM POSTs (`before_prompt_build` / `agent_end`).
 - **`metaclaw setup`** / **`metaclaw start`** are up to you unless **`oneClickMetaclaw`** is **`true`**.
-
-If you develop **inside the OpenClaw git clone** (not the global `openclaw` CLI), run the local CLI from the repo root:
-
-```bash
-pnpm openclaw plugins enable metaclaw-openclaw
-pnpm openclaw gateway restart
-```
 
 ---
 

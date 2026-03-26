@@ -1,6 +1,6 @@
 {
   "id": "metaclaw-openclaw",
-  "version": "0.3.3",
+  "version": "0.4.0",
   "name": "MetaClaw for OpenClaw",
   "description": "MetaClaw session/turn headers; auto-creates a Python venv for isolated MetaClaw installation — run metaclaw setup/start yourself (oneClickMetaclaw for full auto).",
   "configSchema": {
@@ -46,7 +46,11 @@
       },
       "venvPath": {
         "type": "string",
-        "description": "Path to the venv directory. Default: .venv inside the plugin directory."
+        "description": "Path to the venv directory. Default: .metaclaw inside the plugin directory."
+      },
+      "wechatNodeDir": {
+        "type": "string",
+        "description": "Override path to the wechat_node directory. Default: auto-detected from the pip-installed metaclaw package."
       }
     }
   }

@@ -1085,25 +1085,29 @@ class MetaClawAPIServer:
             except Exception:
                 return 0
 
-        cached_system = self._read_cached_system_prompt()
-        if not cached_system:
-            raw_system = ""
-            for m in messages:
-                if isinstance(m, dict) and m.get("role") == "system":
-                    raw_system = _flatten_message_content(m.get("content"))
-                    break
-            if raw_system:
-                cached_system = await asyncio.to_thread(
-                    run_llm,
-                    [{"role": "user", "content": raw_system}],
-                )
-                cached_system = (cached_system or raw_system).strip()
-                self._write_cached_system_prompt(cached_system)
+        cached_system = ""
+        # NOTE: In skills_only mode we forward directly to the user's LLM provider.
+        # Do not rewrite/collapse the system prompt here.
+        if self.config.mode != "skills_only":
+            cached_system = self._read_cached_system_prompt()
+            if not cached_system:
+                raw_system = ""
+                for m in messages:
+                    if isinstance(m, dict) and m.get("role") == "system":
+                        raw_system = _flatten_message_content(m.get("content"))
+                        break
+                if raw_system:
+                    cached_system = await asyncio.to_thread(
+                        run_llm,
+                        [{"role": "user", "content": raw_system}],
+                    )
+                    cached_system = (cached_system or raw_system).strip()
+                    self._write_cached_system_prompt(cached_system)
 
-        if cached_system:
-            for m in messages:
-                if isinstance(m, dict) and m.get("role") == "system":
-                    m["content"] = cached_system
+            if cached_system:
+                for m in messages:
+                    if isinstance(m, dict) and m.get("role") == "system":
+                        m["content"] = cached_system
 
         tools = body.get("tools")
 
@@ -1125,10 +1129,11 @@ class MetaClawAPIServer:
                 messages = await self._inject_memory(messages, scope_id=effective_memory_scope)
             elif self.skill_manager:
                 messages = self._inject_skills(messages)
-        logger.info(
-            "[OpenClaw] system prompt cached len=%d",
-            _prompt_len([{"role": "system", "content": cached_system}]),
-        )
+        if cached_system:
+            logger.info(
+                "[OpenClaw] system prompt cached len=%d",
+                _prompt_len([{"role": "system", "content": cached_system}]),
+            )
 
         # Truncate to fit within max_context_tokens (keep system + most-recent messages)
         max_prompt = self.config.max_context_tokens - int(body.get("max_tokens") or 2048)

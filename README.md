@@ -126,10 +126,19 @@ pip install -e ".[evolve]"              # + skill evolution via OpenAI-compatibl
 pip install -e ".[scheduler]"           # + Google Calendar integration for scheduler
 pip install -e ".[rl,evolve,scheduler]" # recommended for full RL + scheduler setup
 ```
-(Optional) WeChat personal account bridge (requires [Node.js](https://nodejs.org/) on your PATH, ≥ 22 recommended by the SDK). After `pip install`, install the Node dependency once:
+ (Optional) WeChat personal account bridge (requires [Node.js](https://nodejs.org/) on your PATH, ≥ 22 recommended by the SDK).
+ 
+ - If you installed via the **OpenClaw one-click plugin**, the WeChat Node dependencies are installed automatically.
+ - If you installed via **pip**, after `pip install` install the Node dependency once:
 
 ```bash
 cd metaclaw/wechat_node && npm install
+```
+
+Then enable WeChat:
+
+```bash
+metaclaw config wechat.enabled true
 ```
 
 If you set `wechat.bridge_dir` in config, run `npm install` in that directory instead. Please refer to [here](metaclaw/wechat_node/README.md) for full setup (e.g., QR login, relogin, troubleshooting).
