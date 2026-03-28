@@ -1,9 +1,7 @@
 /**
  * MetaClaw OpenClaw extension:
  *   1. Inject X-Session-Id / X-Turn-Type on LLM fetch
- *   2. Register WeChat as an OpenClaw channel so messages flow through the
- *      gateway pipeline (slash commands, skills, routing) before hitting the LLM
- *   3. Create a Python venv, run `pip install`, and optionally `metaclaw start`
+ *   2. Create a Python venv, run `pip install`, and optionally `metaclaw start`
  */
 import { spawn, spawnSync } from "node:child_process";
 import fs from "node:fs";
@@ -471,7 +469,6 @@ function runVenvSetupThenMaybeStart(api: OpenClawPluginApi, full: MetaClawPlugin
       // Already up-to-date — skip pip, still run post-install steps
       api.logger.debug?.(`metaclaw-openclaw: already up-to-date (${installedVersion})`);
       installMetaclawWrapper(api, full.venvPath);
-      autoInstallWeixinPlugin(api, full);
       if (full.autoStartMetaclaw) {
         trySpawnMetaclaw(api, full, venvPy);
       }
@@ -527,88 +524,17 @@ function runVenvSetupThenMaybeStart(api: OpenClawPluginApi, full: MetaClawPlugin
         `metaclaw-openclaw: pip install exited ${code}. stderr tail:\n${errTail}`,
       );
     }
-    // Auto-install WeChat plugin after pip completes
-    if (code === 0) {
-      autoInstallWeixinPlugin(api, full);
-    }
     if (full.autoStartMetaclaw) {
       setTimeout(() => trySpawnMetaclaw(api, full, venvPy), 800);
     }
   });
 }
 
-// ─── WeChat official plugin auto-install ─────────────────────────────
-// Install the official @tencent-weixin/openclaw-weixin plugin so that
-// WeChat is a native OpenClaw channel (same pipeline as Telegram/Slack).
-// This replaces the old weixin-agent-sdk approach.
-
-const WEIXIN_PLUGIN_DIR = path.join(os.homedir(), ".openclaw", "extensions", "openclaw-weixin");
-
-/**
- * Auto-install the official Tencent WeChat plugin for OpenClaw.
- * Uses `npx @tencent-weixin/openclaw-weixin-cli@latest install`.
- * Runs in the background — does not block plugin registration.
- */
-function autoInstallWeixinPlugin(api: OpenClawPluginApi, _full: MetaClawPluginConfig): void {
-  // Already installed — skip
-  if (fs.existsSync(path.join(WEIXIN_PLUGIN_DIR, "package.json"))) {
-    api.logger.debug?.("metaclaw-openclaw: openclaw-weixin plugin already installed");
-    return;
-  }
-
-  // Check npx is available
-  const npxCmd = process.platform === "win32" ? "npx.cmd" : "npx";
-  const npxCheck = spawnSync(npxCmd, ["--version"], { encoding: "utf8", timeout: 10_000 });
-  if (npxCheck.error || npxCheck.status !== 0) {
-    api.logger.warn(
-      "metaclaw-openclaw: npx not found — install Node.js ≥ 18 to enable WeChat. " +
-      "Or run manually: npx -y @tencent-weixin/openclaw-weixin-cli@latest install",
-    );
-    return;
-  }
-
-  api.logger.info("metaclaw-openclaw: installing official WeChat plugin (openclaw-weixin)…");
-
-  const child = spawn(
-    npxCmd,
-    ["-y", "@tencent-weixin/openclaw-weixin-cli@latest", "install"],
-    {
-      shell: process.platform === "win32",
-      stdio: ["ignore", "pipe", "pipe"],
-      env: { ...process.env },
-    },
-  );
-
-  let errTail = "";
-  child.stderr?.on("data", (chunk: Buffer) => {
-    errTail = (errTail + chunk.toString()).slice(-2000);
-  });
-  child.stdout?.on("data", () => {});
-
-  child.on("error", (err) => {
-    api.logger.warn(`metaclaw-openclaw: openclaw-weixin install failed (${String(err)})`);
-  });
-
-  child.on("close", (code) => {
-    if (code === 0) {
-      api.logger.info(
-        "metaclaw-openclaw: openclaw-weixin installed ✓ — " +
-        "scan QR code in OpenClaw UI or run: openclaw channels login --channel openclaw-weixin",
-      );
-    } else {
-      api.logger.warn(
-        `metaclaw-openclaw: openclaw-weixin install exited ${code}. ` +
-        `Run manually: npx -y @tencent-weixin/openclaw-weixin-cli@latest install`,
-      );
-      if (errTail) api.logger.warn(`  stderr: ${errTail.slice(-500)}`);
-    }
-  });
-}
-
 // ─── WeChat ──────────────────────────────────────────────────────────
-// WeChat is handled by the official @tencent-weixin/openclaw-weixin plugin,
-// which is auto-installed by autoInstallWeixinPlugin() above.
-// The custom ChannelPlugin code has been removed.
+// WeChat channel plugin (openclaw-weixin) is NOT auto-installed here.
+// It is installed on-demand when the user enables WeChat via:
+//   metaclaw config wechat.enabled true && metaclaw start
+// See metaclaw/launcher.py → _ensure_openclaw_weixin_plugin()
 
 /**
  * Ensure this plugin is trusted in OpenClaw config:
@@ -657,18 +583,10 @@ export default function register(api: OpenClawPluginApi): void {
   if (_registered) return;
   _registered = true;
 
-  // NOTE: WeChat channel is handled by the official @tencent-weixin/openclaw-weixin plugin,
-  // auto-installed by autoInstallWeixinPlugin() above.
+  // NOTE: WeChat channel plugin (openclaw-weixin) is installed on-demand by
+  // `metaclaw start` when wechat.enabled is true in ~/.metaclaw/config.yaml.
 
   runVenvSetupThenMaybeStart(api, full);
-
-  // If pip install is skipped but venv exists, still try WeChat install
-  if (!full.autoInstallMetaclaw) {
-    const venvPy = venvPython(full.venvPath);
-    if (fs.existsSync(venvPy)) {
-      autoInstallWeixinPlugin(api, full);
-    }
-  }
 
   if (!full.autoInstallMetaclaw && !full.autoStartMetaclaw && !full.oneClickMetaclaw) {
     api.logger.debug?.(
@@ -680,7 +598,7 @@ export default function register(api: OpenClawPluginApi): void {
     );
   } else {
     api.logger.debug?.(
-      "metaclaw-openclaw: venv + pip + WeChat plugin",
+      "metaclaw-openclaw: venv + pip install",
     );
   }
 }
