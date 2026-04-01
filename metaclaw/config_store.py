@@ -44,7 +44,7 @@ _DEFAULTS: dict = {
         "resume_from_ckpt": "",
         "evolver_api_base": "",
         "evolver_api_key": "",
-        "evolver_model": "gpt-5.2",
+        "evolver_model": "",
         "manual_train_trigger": False,
     },
     "memory": {
@@ -190,7 +190,7 @@ class ConfigStore:
         # Evolver: prefer rl.evolver_*, fallback to llm.*
         evolver_api_base = rl.get("evolver_api_base") or llm.get("api_base", "")
         evolver_api_key = rl.get("evolver_api_key") or llm.get("api_key", "")
-        evolver_model = rl.get("evolver_model") or llm.get("model_id") or "gpt-5.2"
+        evolver_model = rl.get("evolver_model") or llm.get("model_id") or ""
 
         skills_dir = str(
             Path(skills.get("dir", str(CONFIG_DIR / "skills"))).expanduser()

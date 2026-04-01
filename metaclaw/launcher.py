@@ -348,7 +348,15 @@ class MetaClawLauncher:
         if cfg.evolver_api_key:
             _set("OPENAI_API_KEY", cfg.evolver_api_key)
         if cfg.evolver_model_id:
-            os.environ.setdefault("SKILL_EVOLVER_MODEL", cfg.evolver_model_id)
+            _set("SKILL_EVOLVER_MODEL", cfg.evolver_model_id)
+        elif not os.environ.get("SKILL_EVOLVER_MODEL"):
+            logger.warning(
+                "[Launcher] No evolver model configured (rl.evolver_model and llm.model_id "
+                "are both empty). Skill evolution will be disabled. Set rl.evolver_model "
+                "or llm.model_id in config.yaml to enable it."
+            )
+            if cfg.enable_skill_evolution:
+                cfg.enable_skill_evolution = False
 
     # ------------------------------------------------------------------ #
     # OpenClaw wiring                                                      #

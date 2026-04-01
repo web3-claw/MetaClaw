@@ -162,7 +162,7 @@ class MetaClawConfig:
     azure_openai_deployment: str = "o3"  # kept for backward compat
     evolver_api_base: str = ""           # leave empty to reuse llm_api_base
     evolver_api_key: str = ""            # leave empty to reuse llm_api_key
-    evolver_model_id: str = "gpt-5.2"
+    evolver_model_id: str = ""
     # AWS Bedrock region (used when prm_provider or evolver_provider = "bedrock")
     bedrock_region: str = "us-east-1"
     skill_evolution_history_path: str = "memory_data/skills/evolution_history.jsonl"

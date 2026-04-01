@@ -1615,9 +1615,13 @@ class MetaClawAPIServer:
 
             return result
         except httpx.HTTPStatusError as e:
-            logger.error("[OpenClaw] upstream LLM error: %s %s", e.response.status_code, e.response.text[:200])
-            logger.debug("[send_body] upstream HTTP error, status=%s", e.response.status_code if hasattr(e, 'response') else 'unknown')
-            raise HTTPException(status_code=502, detail=f"Upstream LLM error: {e}") from e
+            upstream_status = e.response.status_code
+            upstream_body = e.response.text[:500]
+            logger.error("[OpenClaw] upstream LLM error: %s %s", upstream_status, upstream_body[:200])
+            # Pass through 4xx client errors so callers see the real cause
+            # (e.g. 401 invalid API key, 429 rate limited). Upstream 5xx become 502.
+            http_status = upstream_status if 400 <= upstream_status < 500 else 502
+            raise HTTPException(status_code=http_status, detail=upstream_body) from e
         except Exception as e:
             logger.error("[OpenClaw] LLM forward failed: %s", e, exc_info=True)
             raise HTTPException(status_code=502, detail=f"LLM forward error: {e}") from e
