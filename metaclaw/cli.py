@@ -188,6 +188,157 @@ def stop(config: str | None, port: int | None):
 
 
 @metaclaw.command()
+def uninstall():
+    """Remove all MetaClaw data, config, auth, and OpenClaw extension.
+
+    \b
+    Deletes:
+      ~/.metaclaw/                              (config, auth, skills, memory)
+      ~/.openclaw/extensions/metaclaw-openclaw/  (OpenClaw plugin)
+      pip package: aiming-metaclaw
+    """
+    import shutil
+    import subprocess
+    from pathlib import Path
+
+    metaclaw_dir = Path.home() / ".metaclaw"
+    openclaw_ext = Path.home() / ".openclaw" / "extensions" / "metaclaw-openclaw"
+
+    has_data = metaclaw_dir.exists()
+    has_ext = openclaw_ext.exists()
+
+    if not has_data and not has_ext:
+        click.echo("Nothing to remove — MetaClaw is not installed.")
+        return
+
+    click.echo("\nMetaClaw uninstall will remove:")
+    if has_data:
+        file_count = sum(1 for _ in metaclaw_dir.rglob("*") if _.is_file())
+        click.echo(f"  ~/.metaclaw/                     ({file_count} files)")
+    if has_ext:
+        click.echo(f"  ~/.openclaw/extensions/metaclaw-openclaw/")
+    click.echo(f"  pip package: aiming-metaclaw")
+
+    click.echo()
+    if not click.confirm("Proceed?", default=False):
+        click.echo("Cancelled.")
+        return
+
+    # 1. Stop running instance
+    try:
+        from .launcher import pid_file_for_port
+        cs = ConfigStore()
+        port = cs.get("proxy.port") or 30000
+        pid_file = pid_file_for_port(port)
+        if pid_file.exists():
+            import os, signal
+            pid = int(pid_file.read_text().strip())
+            try:
+                os.kill(pid, signal.SIGTERM)
+                click.echo(f"Stopped running instance (PID {pid}).")
+            except ProcessLookupError:
+                pass
+            pid_file.unlink(missing_ok=True)
+    except Exception:
+        pass
+
+    # 2. Clean openclaw.json: remove metaclaw-openclaw references
+    openclaw_json = Path.home() / ".openclaw" / "openclaw.json"
+    if openclaw_json.exists():
+        try:
+            import json
+            raw = json.loads(openclaw_json.read_text(encoding="utf-8"))
+            changed = False
+
+            # plugins.allow — remove "metaclaw-openclaw"
+            plugins = raw.get("plugins", {})
+            allow = plugins.get("allow", [])
+            if isinstance(allow, list) and "metaclaw-openclaw" in allow:
+                allow.remove("metaclaw-openclaw")
+                plugins["allow"] = allow
+                changed = True
+
+            # plugins.load.paths — remove entries containing metaclaw
+            load = plugins.get("load", {})
+            paths = load.get("paths", [])
+            if isinstance(paths, list):
+                new_paths = [p for p in paths if "metaclaw" not in str(p).lower()]
+                if len(new_paths) != len(paths):
+                    load["paths"] = new_paths
+                    changed = True
+
+            # plugins.entries.metaclaw-openclaw — remove entire entry
+            entries = plugins.get("entries", {})
+            if "metaclaw-openclaw" in entries:
+                del entries["metaclaw-openclaw"]
+                changed = True
+
+            # model.providers — remove "metaclaw" entries
+            model = raw.get("model", {})
+            providers = model.get("providers", [])
+            if isinstance(providers, list):
+                new_providers = [p for p in providers if "metaclaw" not in str(p).lower()]
+                if len(new_providers) != len(providers):
+                    model["providers"] = new_providers
+                    changed = True
+
+            # agents.defaults.model.primary — clear if metaclaw
+            agents = raw.get("agents", {})
+            defaults = agents.get("defaults", {})
+            agent_model = defaults.get("model", {})
+            if isinstance(agent_model, dict):
+                primary = agent_model.get("primary", "")
+                if isinstance(primary, str) and "metaclaw" in primary.lower():
+                    agent_model["primary"] = ""
+                    changed = True
+            elif isinstance(agent_model, str) and "metaclaw" in agent_model.lower():
+                defaults["model"] = ""
+                changed = True
+
+            if changed:
+                openclaw_json.write_text(
+                    json.dumps(raw, indent=2, ensure_ascii=False) + "\n",
+                    encoding="utf-8",
+                )
+                click.echo("Cleaned metaclaw references from ~/.openclaw/openclaw.json")
+        except Exception as e:
+            click.echo(f"Warning: could not clean openclaw.json: {e}")
+
+    # 3. Remove OpenClaw extension directory
+    if has_ext:
+        shutil.rmtree(openclaw_ext, ignore_errors=True)
+        click.echo("Removed ~/.openclaw/extensions/metaclaw-openclaw/")
+
+    # 4. Remove ~/.metaclaw/
+    if has_data:
+        shutil.rmtree(metaclaw_dir, ignore_errors=True)
+        click.echo("Removed ~/.metaclaw/")
+
+    # 5. Uninstall pip package
+    try:
+        subprocess.run(
+            [sys.executable, "-m", "pip", "uninstall", "-y", "aiming-metaclaw"],
+            capture_output=True, timeout=30,
+        )
+        click.echo("Uninstalled pip package: aiming-metaclaw")
+    except Exception:
+        click.echo("Could not auto-uninstall pip package. Run manually:")
+        click.echo("  pip uninstall aiming-metaclaw")
+
+    # 6. Restart OpenClaw gateway if available
+    try:
+        subprocess.run(
+            ["openclaw", "gateway", "restart"],
+            capture_output=True, timeout=15,
+        )
+        click.echo("Restarted OpenClaw gateway.")
+    except Exception:
+        pass
+
+    click.echo("\nMetaClaw fully uninstalled.")
+
+
+@metaclaw.command()
 @click.option(
     "-c", "--config",
     type=click.Path(exists=True),
