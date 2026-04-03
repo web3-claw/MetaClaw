@@ -204,8 +204,10 @@ metaclaw stop                   # إيقاف مثيل MetaClaw قيد التشغ
 metaclaw status                 # التحقق من صحة الوكيل الوسيط والوضع الحالي وحالة المُجدوِل
 metaclaw config show            # عرض الإعدادات الحالية
 metaclaw config KEY VALUE       # تعيين قيمة إعداد
+metaclaw config llm.oauth_token TOKEN               # تخزين رمز OAuth لمزود CLI الحالي
 metaclaw auth paste-token --provider anthropic      # تخزين رمز OAuth (anthropic | openai-codex | gemini)
 metaclaw auth status                                # عرض جميع ملفات المصادقة المخزّنة
+metaclaw uninstall              # حذف جميع بيانات MetaClaw وإضافة OpenClaw وحزمة pip
 ```
 
 استخدم `metaclaw status` للتحقق من الجاهزية و`metaclaw stop` لإيقاف العملية.
@@ -396,6 +398,22 @@ metaclaw config scheduler.calendar.credentials_path ~/.metaclaw/client_secrets.j
 إذا عاد المستخدم أثناء التحديث، تُحفظ الدُّفعة الجزئية وتُستأنف في النافذة التالية.
 
 يحمل كل `ConversationSample` علامة إصدار `skill_generation`. عندما يرفع تطوّر المهارات رقم الإصدار، يُفرَّغ مخزن RL المؤقت بحيث تُستخدم فقط العيّنات بعد التطوّر لتحديثات التدرّج (فصل مجموعات support/query في MAML).
+
+---
+
+## 🗑️ إلغاء التثبيت
+
+```bash
+metaclaw uninstall
+```
+
+يحذف كل شيء في خطوة واحدة: يوقف المثيل قيد التشغيل، ينظف مراجع MetaClaw في `~/.openclaw/openclaw.json`، يحذف `~/.openclaw/extensions/metaclaw-openclaw/`، يحذف `~/.metaclaw/`، يلغي تثبيت حزمة pip ويعيد تشغيل بوابة OpenClaw. يُطلب التأكيد قبل أي حذف.
+
+بعد إلغاء التثبيت، احذف المستودع يدويًا إذا قمت باستنساخه:
+
+```bash
+rm -rf /path/to/MetaClaw
+```
 
 ---
 

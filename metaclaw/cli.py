@@ -316,11 +316,19 @@ def uninstall():
 
     # 5. Uninstall pip package
     try:
-        subprocess.run(
+        # Try multiple strategies: pip directly, then sys.executable -m pip
+        for cmd in [
+            ["pip", "uninstall", "-y", "aiming-metaclaw"],
+            ["pip3", "uninstall", "-y", "aiming-metaclaw"],
             [sys.executable, "-m", "pip", "uninstall", "-y", "aiming-metaclaw"],
-            capture_output=True, timeout=30,
-        )
-        click.echo("Uninstalled pip package: aiming-metaclaw")
+        ]:
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+            if result.returncode == 0:
+                click.echo("Uninstalled pip package: aiming-metaclaw")
+                break
+        else:
+            click.echo("Could not auto-uninstall pip package. Run manually:")
+            click.echo("  pip uninstall aiming-metaclaw")
     except Exception:
         click.echo("Could not auto-uninstall pip package. Run manually:")
         click.echo("  pip uninstall aiming-metaclaw")
@@ -336,6 +344,8 @@ def uninstall():
         pass
 
     click.echo("\nMetaClaw fully uninstalled.")
+    click.echo("\nIf you cloned the MetaClaw repo, remove it manually:")
+    click.echo("  rm -rf /path/to/MetaClaw")
 
 
 @metaclaw.command()

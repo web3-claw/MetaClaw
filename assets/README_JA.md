@@ -204,8 +204,10 @@ metaclaw stop                   # 実行中の MetaClaw インスタンスを停
 metaclaw status                 # プロキシの状態、動作モード、スケジューラ状態を確認
 metaclaw config show            # 現在の設定を表示
 metaclaw config KEY VALUE       # 設定値を変更
+metaclaw config llm.oauth_token TOKEN               # 現在の CLI プロバイダーの OAuth トークンを保存
 metaclaw auth paste-token --provider anthropic      # OAuth トークンを保存（anthropic | openai-codex | gemini）
 metaclaw auth status                                # 保存済みの認証プロファイルをすべて表示
+metaclaw uninstall              # すべての MetaClaw データ、OpenClaw 拡張、pip パッケージを削除
 ```
 
 `metaclaw status` で準備状況を確認し、`metaclaw stop` でプロセスを停止できます。
@@ -396,6 +398,22 @@ metaclaw config scheduler.calendar.credentials_path ~/.metaclaw/client_secrets.j
 ユーザーが更新中に戻った場合、部分バッチは保存され、次のウィンドウで再開されます。
 
 各 `ConversationSample` には `skill_generation` バージョンがタグ付けされます。スキル進化がジェネレーションをインクリメントすると、RL バッファがフラッシュされ、進化後のサンプルのみが勾配更新に使用されます（MAML サポート/クエリセット分離）。
+
+---
+
+## 🗑️ アンインストール
+
+```bash
+metaclaw uninstall
+```
+
+すべてを一括削除します：実行中のインスタンスを停止、`~/.openclaw/openclaw.json` から MetaClaw 参照を削除、`~/.openclaw/extensions/metaclaw-openclaw/` を削除、`~/.metaclaw/` を削除、pip パッケージをアンインストール、OpenClaw ゲートウェイを再起動。削除前に確認が求められます。
+
+アンインストール後、リポジトリをクローンしていた場合は手動で削除してください：
+
+```bash
+rm -rf /path/to/MetaClaw
+```
 
 ---
 

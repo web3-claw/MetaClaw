@@ -204,8 +204,10 @@ metaclaw stop                   # Остановить работающий эк
 metaclaw status                 # Проверить состояние прокси, режим работы и статус планировщика
 metaclaw config show            # Просмотр текущей конфигурации
 metaclaw config KEY VALUE       # Установить значение конфигурации
+metaclaw config llm.oauth_token TOKEN               # Сохранить OAuth-токен для текущего CLI-провайдера
 metaclaw auth paste-token --provider anthropic      # Сохранить OAuth-токен (anthropic | openai-codex | gemini)
 metaclaw auth status                                # Показать все сохранённые профили аутентификации
+metaclaw uninstall              # Удалить все данные MetaClaw, расширение OpenClaw и pip-пакет
 ```
 
 Используйте `metaclaw status` для проверки готовности и `metaclaw stop` для остановки процесса.
@@ -396,6 +398,22 @@ metaclaw config scheduler.calendar.credentials_path ~/.metaclaw/client_secrets.j
 Если пользователь возвращается во время обновления, частичный batch сохраняется и возобновляется в следующем окне.
 
 Каждый `ConversationSample` помечается версией `skill_generation`. Когда эволюция навыков увеличивает поколение, RL-буфер очищается, и для градиентных обновлений используются только пост-эволюционные примеры (разделение MAML support/query множеств).
+
+---
+
+## 🗑️ Удаление
+
+```bash
+metaclaw uninstall
+```
+
+Удаляет всё за один шаг: останавливает запущенный экземпляр, очищает ссылки на MetaClaw в `~/.openclaw/openclaw.json`, удаляет `~/.openclaw/extensions/metaclaw-openclaw/`, удаляет `~/.metaclaw/`, удаляет pip-пакет и перезапускает шлюз OpenClaw. Перед удалением запрашивается подтверждение.
+
+После удаления вручную удалите репозиторий, если клонировали:
+
+```bash
+rm -rf /path/to/MetaClaw
+```
 
 ---
 

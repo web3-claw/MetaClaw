@@ -204,8 +204,10 @@ metaclaw stop                   # Dung phien ban MetaClaw dang chay
 metaclaw status                 # Kiem tra tinh trang proxy, che do chay va trang thai bo lap lich
 metaclaw config show            # Xem cau hinh hien tai
 metaclaw config KEY VALUE       # Dat gia tri cau hinh
+metaclaw config llm.oauth_token TOKEN               # Luu token OAuth cho nha cung cap CLI hien tai
 metaclaw auth paste-token --provider anthropic      # Luu token OAuth (anthropic | openai-codex | gemini)
 metaclaw auth status                                # Hien thi tat ca cac ho so xac thuc da luu
+metaclaw uninstall              # Xoa tat ca du lieu MetaClaw, phan mo rong OpenClaw va goi pip
 ```
 
 Su dung `metaclaw status` de kiem tra trang thai san sang va `metaclaw stop` de dung tien trinh.
@@ -396,6 +398,22 @@ metaclaw config scheduler.calendar.credentials_path ~/.metaclaw/client_secrets.j
 Neu nguoi dung quay lai giua chung, batch chua hoan thanh se duoc luu va tiep tuc o cua so tiep theo.
 
 Moi `ConversationSample` duoc gan nhan phien ban `skill_generation`. Khi tien hoa Skill tang generation, bo dem RL se duoc xoa sach va chi su dung cac mau sau tien hoa cho cap nhat gradient (phan tach tap support/query theo MAML).
+
+---
+
+## 🗑️ Go cai dat
+
+```bash
+metaclaw uninstall
+```
+
+Xoa tat ca trong mot buoc: dung phien ban dang chay, don sach tham chieu MetaClaw trong `~/.openclaw/openclaw.json`, xoa `~/.openclaw/extensions/metaclaw-openclaw/`, xoa `~/.metaclaw/`, go cai dat goi pip va khoi dong lai cong OpenClaw. Ban se duoc yeu cau xac nhan truoc khi xoa.
+
+Sau khi go cai dat, xoa thu muc repo thu cong neu ban da clone:
+
+```bash
+rm -rf /path/to/MetaClaw
+```
 
 ---
 

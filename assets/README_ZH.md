@@ -204,8 +204,10 @@ metaclaw stop                   # 停止正在运行的 MetaClaw 实例
 metaclaw status                 # 查看代理健康状态、运行模式与调度器状态
 metaclaw config show            # 查看当前配置
 metaclaw config KEY VALUE       # 设置配置项
+metaclaw config llm.oauth_token TOKEN               # 为当前 CLI provider 存储 OAuth token
 metaclaw auth paste-token --provider anthropic      # 存储 OAuth token（anthropic | openai-codex | gemini）
 metaclaw auth status                                # 显示所有已存储的认证配置
+metaclaw uninstall              # 删除所有 MetaClaw 数据、OpenClaw 扩展和 pip 包
 ```
 
 使用 `metaclaw status` 验证就绪状态，使用 `metaclaw stop` 停止进程。
@@ -396,6 +398,22 @@ metaclaw config scheduler.calendar.credentials_path ~/.metaclaw/client_secrets.j
 若用户在更新中途返回,部分 batch 会被保存并在下次窗口恢复。
 
 每个 `ConversationSample` 带有 `skill_generation` 版本标签。当 Skill 进化增加 generation 时,RL buffer 被清空,仅使用进化后的样本进行梯度更新（MAML support/query 集分离）。
+
+---
+
+## 🗑️ 卸载
+
+```bash
+metaclaw uninstall
+```
+
+一键删除所有内容：停止运行实例、清理 `~/.openclaw/openclaw.json` 中的 MetaClaw 引用、删除 `~/.openclaw/extensions/metaclaw-openclaw/`、删除 `~/.metaclaw/`、卸载 pip 包并重启 OpenClaw 网关。删除前会要求确认。
+
+卸载后如有克隆的源码仓库，请手动删除：
+
+```bash
+rm -rf /path/to/MetaClaw
+```
 
 ---
 

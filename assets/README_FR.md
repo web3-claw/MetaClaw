@@ -204,8 +204,10 @@ metaclaw stop                   # Arreter une instance MetaClaw en cours
 metaclaw status                 # Verifier l'etat du proxy, le mode en cours et le planificateur
 metaclaw config show            # Afficher la configuration actuelle
 metaclaw config KEY VALUE       # Definir une valeur de configuration
+metaclaw config llm.oauth_token TOKEN               # Stocker le token OAuth pour le fournisseur CLI actuel
 metaclaw auth paste-token --provider anthropic      # Stocker un token OAuth (anthropic | openai-codex | gemini)
 metaclaw auth status                                # Afficher tous les profils d'authentification enregistres
+metaclaw uninstall              # Supprimer toutes les donnees MetaClaw, l'extension OpenClaw et le paquet pip
 ```
 
 Utilisez `metaclaw status` pour verifier la disponibilite et `metaclaw stop` pour arreter le processus.
@@ -395,6 +397,22 @@ metaclaw config scheduler.calendar.credentials_path ~/.metaclaw/client_secrets.j
 Si l'utilisateur revient en cours de mise a jour, le batch partiel est sauvegarde et repris a la prochaine fenetre.
 
 Chaque `ConversationSample` est etiquete avec une version `skill_generation`. Lorsque l'evolution des skills incremente la generation, le buffer RL est vide afin que seuls les echantillons post-evolution soient utilises pour les mises a jour de gradient (separation support/query MAML).
+
+---
+
+## 🗑️ Desinstallation
+
+```bash
+metaclaw uninstall
+```
+
+Supprime tout en une seule etape : arrete l'instance en cours, nettoie les references MetaClaw dans `~/.openclaw/openclaw.json`, supprime `~/.openclaw/extensions/metaclaw-openclaw/`, supprime `~/.metaclaw/`, desinstalle le paquet pip et redemarre la passerelle OpenClaw. Une confirmation est demandee avant toute suppression.
+
+Apres la desinstallation, supprimez manuellement le depot si vous l'avez clone :
+
+```bash
+rm -rf /path/to/MetaClaw
+```
 
 ---
 

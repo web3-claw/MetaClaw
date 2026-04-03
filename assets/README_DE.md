@@ -204,8 +204,10 @@ metaclaw stop                   # Laufende MetaClaw-Instanz stoppen
 metaclaw status                 # Proxy-Status, laufenden Modus und Scheduler prüfen
 metaclaw config show            # Aktuelle Konfiguration anzeigen
 metaclaw config KEY VALUE       # Konfigurationswert setzen
+metaclaw config llm.oauth_token TOKEN               # OAuth-Token fuer den aktuellen CLI-Anbieter speichern
 metaclaw auth paste-token --provider anthropic      # OAuth-Token speichern (anthropic | openai-codex | gemini)
 metaclaw auth status                                # Alle gespeicherten Authentifizierungsprofile anzeigen
+metaclaw uninstall              # Alle MetaClaw-Daten, OpenClaw-Erweiterung und pip-Paket entfernen
 ```
 
 Verwenden Sie `metaclaw status` zur Überprüfung der Bereitschaft und `metaclaw stop` zum Stoppen des Prozesses.
@@ -396,6 +398,22 @@ metaclaw config scheduler.calendar.credentials_path ~/.metaclaw/client_secrets.j
 Wenn der Benutzer während eines Updates zurückkehrt, wird der partielle Batch gespeichert und im nächsten Fenster fortgesetzt.
 
 Jedes `ConversationSample` wird mit einer `skill_generation`-Version getaggt. Wenn die Skill-Evolution die Generation erhöht, wird der RL-Buffer geleert, sodass nur Post-Evolutions-Samples für Gradient-Updates verwendet werden (MAML Support/Query-Set-Trennung).
+
+---
+
+## 🗑️ Deinstallation
+
+```bash
+metaclaw uninstall
+```
+
+Entfernt alles in einem Schritt: Stoppt die laufende Instanz, bereinigt MetaClaw-Referenzen in `~/.openclaw/openclaw.json`, loescht `~/.openclaw/extensions/metaclaw-openclaw/`, loescht `~/.metaclaw/`, deinstalliert das pip-Paket und startet das OpenClaw-Gateway neu. Vor dem Loeschen wird eine Bestaetigung angefordert.
+
+Nach der Deinstallation das Repository manuell loeschen, falls geklont:
+
+```bash
+rm -rf /path/to/MetaClaw
+```
 
 ---
 

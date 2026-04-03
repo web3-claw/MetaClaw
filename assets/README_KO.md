@@ -204,8 +204,10 @@ metaclaw stop                   # 실행 중인 MetaClaw 인스턴스 중지
 metaclaw status                 # 프록시 상태, 실행 모드 및 스케줄러 상태 확인
 metaclaw config show            # 현재 설정 보기
 metaclaw config KEY VALUE       # 설정값 변경
+metaclaw config llm.oauth_token TOKEN               # 현재 CLI 프로바이더의 OAuth 토큰 저장
 metaclaw auth paste-token --provider anthropic      # OAuth 토큰 저장 (anthropic | openai-codex | gemini)
 metaclaw auth status                                # 저장된 모든 인증 프로필 표시
+metaclaw uninstall              # 모든 MetaClaw 데이터, OpenClaw 확장, pip 패키지 삭제
 ```
 
 `metaclaw status`로 준비 상태를 확인하고 `metaclaw stop`으로 프로세스를 중지할 수 있습니다.
@@ -396,6 +398,22 @@ metaclaw config scheduler.calendar.credentials_path ~/.metaclaw/client_secrets.j
 사용자가 업데이트 중에 돌아오면, 부분 배치가 저장되고 다음 창에서 재개됩니다.
 
 각 `ConversationSample`에는 `skill_generation` 버전이 태그됩니다. 스킬 진화가 generation을 증가시키면, RL 버퍼가 플러시되어 진화 후 샘플만 그래디언트 업데이트에 사용됩니다 (MAML support/query 집합 분리).
+
+---
+
+## 🗑️ 제거
+
+```bash
+metaclaw uninstall
+```
+
+모든 것을 한 번에 삭제합니다: 실행 중인 인스턴스 중지, `~/.openclaw/openclaw.json`에서 MetaClaw 참조 제거, `~/.openclaw/extensions/metaclaw-openclaw/` 삭제, `~/.metaclaw/` 삭제, pip 패키지 제거, OpenClaw 게이트웨이 재시작. 삭제 전 확인을 요청합니다.
+
+제거 후 리포지토리를 클론했다면 수동으로 삭제하세요:
+
+```bash
+rm -rf /path/to/MetaClaw
+```
 
 ---
 

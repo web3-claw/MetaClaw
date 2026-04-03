@@ -153,8 +153,11 @@ metaclaw setup
 
 The interactive wizard will ask you to:
 1. **Choose your personal agent** — `openclaw`, `copaw`, `ironclaw`, `picoclaw`, `zeroclaw`, `nanoclaw`, `nemoclaw`, or `none` (MetaClaw will auto-configure it on start)
-2. **Choose your LLM provider** — Kimi, Qwen, OpenAI, Volcano Engine, or custom
-3. **Enter your API key** and optionally enable RL training
+2. **Choose your auth method** — `api_key` (direct API) or `oauth_token` (CLI subprocess)
+3. **Choose your LLM provider**:
+   - **api_key**: Kimi, Qwen, OpenAI, Volcano Engine, or custom → enter API base + API key
+   - **oauth_token**: Anthropic (Claude Code), OpenAI Codex, or Gemini CLI → paste OAuth token
+4. **Enter your model ID** and optionally enable RL training
 
 MetaClaw's RL path can switch explicitly between `tinker`, `mint`, and `weaver`. `auto` is the recommended default and will infer the backend from credentials, base URLs, or environment variables when the corresponding package is installed.
 
@@ -269,8 +272,10 @@ metaclaw stop                   # Stop a running MetaClaw instance
 metaclaw status                 # Check proxy health, running mode, and scheduler state
 metaclaw config show            # View current configuration
 metaclaw config KEY VALUE       # Set a config value
+metaclaw config llm.oauth_token TOKEN        # Store OAuth token for current CLI provider
 metaclaw auth paste-token --provider anthropic      # Store OAuth token (anthropic | openai-codex | gemini)
 metaclaw auth status                                # Show all stored auth profiles
+metaclaw uninstall              # Remove all MetaClaw data, OpenClaw extension, and pip package
 ```
 
 When you start MetaClaw, the command waits until the local proxy becomes healthy before returning. Use `metaclaw status` to verify readiness and `metaclaw stop` to stop the background process.
@@ -506,6 +511,22 @@ For deployments that require process isolation, MetaClaw ships with a standalone
 
 ```bash
 metaclaw config memory.sidecar_url http://127.0.0.1:30001
+```
+
+---
+
+## 🗑️ Uninstall
+
+```bash
+metaclaw uninstall
+```
+
+This removes everything in one step: stops the running instance, cleans MetaClaw references from `~/.openclaw/openclaw.json`, deletes `~/.openclaw/extensions/metaclaw-openclaw/`, deletes `~/.metaclaw/`, uninstalls the pip package, and restarts the OpenClaw gateway. You will be prompted to confirm before anything is deleted.
+
+After uninstall, remove the source repo manually if you cloned it:
+
+```bash
+rm -rf /path/to/MetaClaw
 ```
 
 ---
